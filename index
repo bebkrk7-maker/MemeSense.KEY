@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MemeSense | Key System</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
+
+        :root {
+            --accent: #ff3131;
+            --bg: #050505;
+            --card: #0f0f0f;
+            --border: #1a1a1a;
+            --success: #00ff88;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            user-select: none;
+        }
+
+        header { margin-bottom: 20px; text-align: center; }
+        .logo { font-size: 3.5rem; font-weight: 900; letter-spacing: -2px; text-transform: uppercase; margin: 0; }
+        .logo span:first-child { color: var(--accent); }
+
+        .container {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 40px;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+        }
+
+        h2 { font-size: 1.1rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 25px; color: #aaa; }
+
+        .ad-step {
+            background: #000;
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.3s;
+        }
+        
+        .ad-step.done { border-color: var(--success); opacity: 0.5; }
+
+        .btn-ad {
+            background: #222;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            min-width: 90px;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }
+        .btn-ad:disabled { cursor: not-allowed; color: #444; }
+
+        #key-box {
+            display: none;
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(0, 255, 136, 0.05);
+            border: 2px dashed var(--success);
+            border-radius: 12px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .key-text {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--success);
+            display: block;
+            margin: 10px 0;
+            letter-spacing: 3px;
+        }
+
+        .copy-btn {
+            background: var(--success);
+            color: black;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+            width: 100%;
+            text-transform: uppercase;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <header>
+        <h1 class="logo"><span>Meme</span>Sense</h1>
+    </header>
+
+    <div class="container">
+        <h2>Complete Tasks</h2>
+        
+        <div class="ad-step" id="s1">
+            <span>Watch Showcase</span>
+            <button class="btn-ad" onclick="runTask(1, 'https://www.youtube.com/watch?v=uTVWT2DGZ98')">Watch</button>
+        </div>
+        
+        <div class="ad-step" id="s2">
+            <span>Subscribe to RuX</span>
+            <button class="btn-ad" id="b2" onclick="runTask(2, 'https://www.youtube.com/@RuxGaming')" disabled>Subscribe</button>
+        </div>
+        
+        <div class="ad-step" id="s3">
+            <span>Join Discord</span>
+            <button class="btn-ad" id="b3" onclick="runTask(3, 'https://discord.gg/MG9ucvhNYt')" disabled>Join</button>
+        </div>
+
+        <div id="key-box">
+            <span style="font-size: 0.7rem; color: #777; font-weight: 800; text-transform: uppercase;">Your Unique Key:</span>
+            <span class="key-text" id="finalKey">Meme</span>
+            <button class="copy-btn" onclick="copyKey()">Copy Key</button>
+        </div>
+    </div>
+
+    <script>
+        let completed = 0;
+
+        function runTask(step, url) {
+            window.open(url, '_blank');
+            let btn = event.currentTarget;
+            let seconds = 15;
+            btn.disabled = true;
+
+            let timer = setInterval(() => {
+                btn.innerText = `${seconds}s`;
+                seconds--;
+                
+                if (seconds < 0) {
+                    clearInterval(timer);
+                    btn.innerText = "DONE";
+                    document.getElementById(`s${step}`).classList.add('done');
+                    completed++;
+                    
+                    if (step === 1) document.getElementById('b2').disabled = false;
+                    if (step === 2) document.getElementById('b3').disabled = false;
+                    
+                    if (completed === 3) {
+                        document.getElementById('key-box').style.display = 'block';
+                    }
+                }
+            }, 1000);
+        }
+
+        function copyKey() {
+            const key = document.getElementById('finalKey').innerText;
+            navigator.clipboard.writeText(key);
+            alert("Key copied! Use this to unlock the script.");
+        }
+
+        // Anti-Inspect shortcut block
+        document.onkeydown = function(e) {
+            if (e.keyCode == 123 || (e.ctrlKey && (e.keyCode == 85 || e.keyCode == 73))) return false;
+        };
+    </script>
+</body>
+</html>
