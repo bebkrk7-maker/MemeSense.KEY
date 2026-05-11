@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MemeSense Hub</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
+
+        :root {
+            --accent: #ff3131;
+            --bg: #050505;
+            --card: #0f0f0f;
+            --border: #1a1a1a;
+            --text-main: #ffffff;
+            --text-dim: #777777;
+            --success: #00ff88;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        header { margin-bottom: 30px; text-align: center; }
+        .logo { font-size: 3.5rem; font-weight: 900; letter-spacing: -2px; text-transform: uppercase; margin: 0; }
+        .logo span:first-child { color: var(--accent); }
+
+        /* Main Container */
+        .auth-card {
+            background: var(--card); 
+            border: 1px solid var(--border);
+            padding: 40px; 
+            border-radius: 24px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        h2 { margin-top: 0; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* Ad Steps */
+        .ad-step {
+            background: #000; 
+            border: 1px solid var(--border); 
+            padding: 15px;
+            border-radius: 12px; 
+            margin-bottom: 12px; 
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+            transition: all 0.3s;
+        }
+        .ad-step.completed { border-color: var(--success); opacity: 0.5; }
+        
+        .btn-ad {
+            background: #222; 
+            color: white; 
+            border: none; 
+            padding: 10px 18px;
+            border-radius: 8px; 
+            font-weight: 700; 
+            cursor: pointer;
+            min-width: 80px;
+        }
+        .btn-ad:disabled { cursor: not-allowed; color: var(--text-dim); }
+
+        /* Inputs and Action Button */
+        input[type="text"] {
+            width: 100%; 
+            box-sizing: border-box; 
+            background: #000;
+            border: 1px solid var(--border); 
+            padding: 18px; 
+            border-radius: 12px;
+            color: white; 
+            margin: 20px 0 10px 0; 
+            outline: none; 
+            text-align: center;
+            font-size: 1rem;
+        }
+        input[type="text"]:focus { border-color: var(--accent); }
+
+        .btn-action {
+            width: 100%; 
+            background: var(--accent); 
+            color: white; 
+            border: none;
+            padding: 18px; 
+            border-radius: 12px; 
+            font-weight: 800;
+            cursor: pointer; 
+            text-transform: uppercase;
+            transition: transform 0.2s;
+        }
+        .btn-action:disabled { background: #1a1a1a; color: #444; cursor: not-allowed; }
+        .btn-action:active { transform: scale(0.98); }
+
+        #key-reveal {
+            margin: 20px 0; 
+            padding: 15px; 
+            border: 2px dashed var(--success); 
+            color: var(--success); 
+            font-weight: 900; 
+            font-size: 1.3rem;
+            animation: pulse 1.5s infinite;
+        }
+
+        .code-box { 
+            background: #000; 
+            padding: 20px; 
+            border-radius: 12px; 
+            border: 1px solid #222; 
+            font-family: monospace; 
+            color: var(--success); 
+            word-break: break-all; 
+            margin-bottom: 20px;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        #error { color: var(--accent); font-weight: bold; margin-top: 10px; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 class="logo"><span>Meme</span>Sense</h1>
+    </header>
+
+    <div class="auth-card" id="ad-panel">
+        <h2>Key Access</h2>
+        
+        <div class="ad-step" id="step1"><span>Step 1</span><button class="btn-ad" onclick="startAd(1)">Ad 1</button></div>
+        <div class="ad-step" id="step2"><span>Step 2</span><button class="btn-ad" id="btn2" onclick="startAd(2)" disabled>Ad 2</button></div>
+        <div class="ad-step" id="step3"><span>Step 3</span><button class="btn-ad" id="btn3" onclick="startAd(3)" disabled>Ad 3</button></div>
+
+        <div id="key-reveal" style="display: none;">
+            KEY: Meme
+        </div>
+        
+        <input type="text" id="keyInput" placeholder="ENTER UNLOCKED KEY">
+        <button class="btn-action" id="unlockBtn" onclick="verify()" disabled>Unlock Script</button>
+        <p id="error" style="display: none;">INVALID KEY!</p>
+    </div>
+
+    <div class="auth-card" id="script-display" style="display: none;">
+        <h2 style="color: var(--success);">Authenticated</h2>
+        <div class="code-box" id="rawScript">loadstring(game:HttpGet("https://raw.githubusercontent.com/bebkrk7-maker/Idk/refs/heads/main/Script"))()</div>
+        <button class="btn-action" style="background: #222;" onclick="copy()">Copy to Clipboard</button>
+    </div>
+
+    <script>
+        let adsDone = 0;
+
+        function startAd(num) {
+            // Open a "ad" link
+            window.open('https://www.google.com', '_blank'); 
+            
+            let btn = event.currentTarget;
+            let time = 15;
+            btn.disabled = true;
+
+            let timer = setInterval(() => {
+                btn.innerText = `${time}s`;
+                time--;
+                if (time < 0) {
+                    clearInterval(timer);
+                    btn.innerText = "Done";
+                    document.getElementById(`step${num}`).classList.add('completed');
+                    adsDone++;
+                    
+                    if (num === 1) document.getElementById('btn2').disabled = false;
+                    if (num === 2) document.getElementById('btn3').disabled = false;
+                    
+                    if (adsDone === 3) {
+                        document.getElementById('key-reveal').style.display = 'block';
+                        document.getElementById('unlockBtn').disabled = false;
+                    }
+                }
+            }, 1000);
+        }
+
+        function verify() {
+            const key = document.getElementById('keyInput').value;
+            if (key === "Meme") {
+                document.getElementById('ad-panel').style.display = 'none';
+                document.getElementById('script-display').style.display = 'block';
+            } else {
+                document.getElementById('error').style.display = 'block';
+            }
+        }
+
+        function copy() {
+            navigator.clipboard.writeText(document.getElementById('rawScript').innerText);
+            alert("Script copied to clipboard!");
+        }
+    </script>
+</body>
+</html>
